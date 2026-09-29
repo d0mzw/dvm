@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% set active_menu = "archive" %}
+
+{% block title %}Archive &middot; {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title archive-title">Archive</h1>
+<p class="count">{{ dates|length }} post{{ 's' if dates|length != 1 }}</p>
+
+{% for year, posts in dates|groupby('date.year')|reverse %}
+<section class="year">
+  <h2>{{ year }}</h2>
+  <div class="rows">
+    {% for article in posts %}
+    <a class="row" href="{{ SITEURL }}/{{ article.url }}">
+      <time datetime="{{ article.date.isoformat() }}">{{ article.date|strftime('%b %-d') }}</time>
+      <span class="title">{{ article.title }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

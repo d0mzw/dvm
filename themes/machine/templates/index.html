@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set active_menu = "posts" %}
+
+{% block content %}
+{% if not articles_page or articles_page.number == 1 %}
+<section class="intro">
+  <h1>{{ SITENAME }}</h1>
+  {% if INTRO %}<p>{{ INTRO }}</p>{% endif %}
+  {% if SOCIAL %}
+  <div class="social">
+    {% for name, link in SOCIAL %}
+    <a href="{{ link }}"{% if not link.startswith('mailto:') %} rel="me noopener" target="_blank"{% endif %}>{{ name }} &#8599;</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="post-list{% if LIST_STYLE == 'cards' %} cards{% endif %}">
+  {% for article in articles_page.object_list %}
+  <article class="post-entry">
+    <h2><a class="entry-link" href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
+    <p>{{ article.summary|striptags }}</p>
+    {% include "_meta.html" %}
+  </article>
+  {% endfor %}
+</div>
+
+{% include "pagination.html" %}
+{% endblock %}

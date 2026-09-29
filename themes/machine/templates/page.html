@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% set active_menu = page.slug %}
+
+{% block html_lang %}{{ page.lang }}{% endblock %}
+{% block title %}{{ page.title|striptags }} &middot; {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ page.title }}</h1>
+<div class="post-content">
+  {{ page.content }}
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set active_menu = "tags" %}
+
+{% block title %}Tags &middot; {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title tags-title">Tags</h1>
+<div class="tag-cloud">
+  {% for t, tagged in tags|sort(attribute='0.name') %}
+  <a class="chip{% if tag is defined and t == tag %} current{% endif %}" href="{{ SITEURL }}/{{ t.url }}">{{ t }}<sup>{{ tagged|length }}</sup></a>
+  {% endfor %}
+</div>
+{% block tagged %}{% endblock %}
+{% endblock %}

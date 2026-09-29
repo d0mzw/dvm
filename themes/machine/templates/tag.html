@@ -1,0 +1,15 @@
+{% extends "tags.html" %}
+
+{% block title %}{{ tag }} &middot; {{ SITENAME }}{% endblock %}
+
+{% block tagged %}
+<div class="tagged">
+  <div class="eyebrow">tagged <span>{{ tag }}</span></div>
+  {% for article in articles %}
+  <a class="row" href="{{ SITEURL }}/{{ article.url }}">
+    <time datetime="{{ article.date.isoformat() }}">{{ article.locale_date }}</time>
+    <span class="title">{{ article.title }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

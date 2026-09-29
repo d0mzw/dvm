@@ -1,0 +1,11 @@
+{%- set items = [] -%}
+{%- for article in articles -%}
+{%- set _ = items.append({
+  "title": article.title|striptags,
+  "url": SITEURL ~ "/" ~ article.url,
+  "date": article.locale_date,
+  "summary": article.summary|striptags|trim,
+  "tags": article.tags|map("string")|list,
+}) -%}
+{%- endfor -%}
+{{ items|tojson }}

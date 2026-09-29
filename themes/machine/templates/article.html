@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% set active_menu = "archive" %}
+
+{% block html_lang %}{{ article.lang }}{% endblock %}
+{% block title %}{{ article.title|striptags }} &middot; {{ SITENAME }}{% endblock %}
+{% block description %}{{ article.summary|striptags|trim }}{% endblock %}
+
+{% block content %}
+<article class="post">
+  <div class="breadcrumb">
+    <a href="{{ SITEURL }}/">Home</a><span>&raquo;</span><a href="{{ SITEURL }}/{{ ARCHIVES_SAVE_AS|default('archives.html') }}">Posts</a>
+  </div>
+  <h1 class="post-title">{{ article.title }}</h1>
+  <div class="post-meta">
+    <time datetime="{{ article.date.isoformat() }}">{{ article.locale_date }}</time>
+    <span>&middot;</span><span>{{ article.minutes }} min</span>
+    <span>&middot;</span><span>{{ article.words }} words</span>
+    <span>&middot;</span><span>{{ article.author }}</span>
+  </div>
+
+  {% if article.toc %}
+  <details class="post-toc" open>
+    <summary>Table of Contents</summary>
+    {{ article.toc }}
+  </details>
+  {% endif %}
+
+  <div class="post-content">
+    {{ article.content }}
+  </div>
+
+  {% if article.tags %}
+  <div class="post-tags">
+    {% for tag in article.tags %}
+    <a class="chip" href="{{ SITEURL }}/{{ tag.url }}">{{ tag }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if article.prev_article or article.next_article %}
+  <nav class="post-nav">
+    {% if article.prev_article %}
+    <a class="prev" href="{{ SITEURL }}/{{ article.prev_article.url }}">
+      <span class="label">&laquo; Prev</span>
+      <span class="title">{{ article.prev_article.title }}</span>
+    </a>
+    {% else %}<span class="prev empty" aria-hidden="true"></span>{% endif %}
+    {% if article.next_article %}
+    <a class="next" href="{{ SITEURL }}/{{ article.next_article.url }}">
+      <span class="label">Next &raquo;</span>
+      <span class="title">{{ article.next_article.title }}</span>
+    </a>
+    {% else %}<span class="next empty" aria-hidden="true"></span>{% endif %}
+  </nav>
+  {% endif %}
+</article>
+{% endblock %}

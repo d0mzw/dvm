@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{% block html_lang %}{{ DEFAULT_LANG }}{% endblock %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ INTRO|default('')|striptags }}{% endblock %}">
+  <meta name="generator" content="Pelican">
+  <script>
+    (function () {
+      var t;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (t !== "light" && t !== "dark") t = "light";
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/style.css">
+  <link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/pygments.css">
+  {% if FEED_ALL_ATOM %}
+  <link rel="alternate" type="application/atom+xml" href="{{ FEED_DOMAIN or SITEURL }}/{{ FEED_ALL_ATOM }}" title="{{ SITENAME }}">
+  {% endif %}
+  {% block head %}{% endblock %}
+  <script src="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header container">
+    <div class="brand">
+      <a class="logo" href="{{ SITEURL }}/">{{ SITENAME }}</a>
+      <button class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme"><span></span></button>
+    </div>
+    <nav class="nav">
+      {% for title, link in MENUITEMS %}
+      <a href="{{ SITEURL }}{{ link }}"{% if title == active_menu|default('') %} class="active" aria-current="page"{% endif %}>{{ title }}</a>
+      {% endfor %}
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer container">
+    <span>&copy; {{ COPYRIGHT_YEAR|default('2026') }} {{ SITENAME }}</span>
+    <span>Powered by <a href="https://getpelican.com">Pelican</a></span>
+  </footer>
+
+  <a class="to-top" href="#" title="Top" aria-label="Back to top">&uarr;</a>
+</body>
+</html>

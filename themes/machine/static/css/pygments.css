@@ -1,0 +1,35 @@
+/* Syntax colours driven by the theme tokens; no backgrounds, no italics. */
+.highlight,
+.highlight * {
+  color: var(--fg);
+  background: none;
+  font-style: normal;
+  font-weight: inherit;
+}
+
+.highlight .k, .highlight .kc, .highlight .kd, .highlight .kn, .highlight .kp,
+.highlight .kr, .highlight .kt, .highlight .cp, .highlight .nb,
+.highlight .bp, .highlight .ow {
+  color: var(--kw);
+}
+
+.highlight .cpf,
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sa, .highlight .sb,
+.highlight .sc, .highlight .sd, .highlight .se, .highlight .sh, .highlight .si,
+.highlight .sx, .highlight .sr, .highlight .ss, .highlight .dl {
+  color: var(--str);
+}
+
+.highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi,
+.highlight .il, .highlight .mo {
+  color: var(--num);
+}
+
+.highlight .c, .highlight .c1, .highlight .cm, .highlight .ch, .highlight .cs,
+.highlight .gp {
+  color: var(--cm);
+}
+
+.highlight .nf, .highlight .fm {
+  color: var(--accent);
+}

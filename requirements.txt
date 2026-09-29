@@ -1,0 +1,3 @@
+pelican==4.12.0
+markdown
+pymdown-extensions

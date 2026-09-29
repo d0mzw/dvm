@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set active_menu = "search" %}
+
+{% block title %}Search &middot; {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title search-title">Search</h1>
+<input id="search-input" class="search-input" type="search" placeholder="search posts &crarr;" aria-label="Search posts" autocomplete="off" autofocus data-index="{{ SITEURL }}/search.json">
+<div id="search-results" class="search-results"></div>
+<p id="search-empty" class="search-empty" hidden>no matches.</p>
+{% endblock %}

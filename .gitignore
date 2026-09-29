@@ -1,0 +1,10 @@
+# Build output (GitHub Actions builds its own)
+output/
+
+# Local Python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Pelican
+.pelican-cache/

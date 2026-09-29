@@ -1,0 +1,5 @@
+<div class="meta">
+  <time datetime="{{ article.date.isoformat() }}">{{ article.locale_date }}</time>
+  <span>&middot;</span><span>{{ article.minutes }} min</span>
+  {% if article.tags %}<span>&middot;</span><span class="meta-tags">{{ article.tags|join(', ') }}</span>{% endif %}
+</div>
