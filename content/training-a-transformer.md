@@ -6,7 +6,7 @@ tags:
   - tinystories
   - arena
 slug: training-a-transformer
-summary: The other half of the port, where the weights stop being downloaded and start being learned. A loss, a data pipeline, a trainer, and six TinyStories runs that ended by finding the context window, not capacity, was what kept the stories from holding together.
+summary: Continuation of the Understanding Transformers post, where the weights stop being downloaded and start being learned. A loss, a data pipeline, a trainer, and six TinyStories runs that ended by finding the context window, not capacity, was what kept the stories from holding together.
 ---
 
 A continuation of [Understanding Transformers]({filename}understanding-transformers.md), where I ported ARENA's GPT-2 implementation into `PvML` one module at a time. To check each module I loaded GPT-2's own weights into it and compared the output against the reference, which is how I know the implementation is right.
