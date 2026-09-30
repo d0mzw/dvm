@@ -394,6 +394,7 @@ main.container {
 .post-content {
   font-size: 17.5px;
   line-height: 1.75;
+  overflow-wrap: break-word; /* long URLs and identifiers wrap instead of widening the page */
 }
 
 .post-content p {

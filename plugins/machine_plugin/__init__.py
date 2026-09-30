@@ -124,6 +124,8 @@ _CODE_RE = re.compile(r'<div class="language-([\w+#.-]+) highlight">')
 
 def _label(match):
     lang = match.group(1)
+    if lang == "text":  # fence with no language: nothing worth labelling
+        return match.group(0)
     label = LANG_LABELS.get(lang, lang)
     return f'{match.group(0)}<span class="code-lang">{label}</span>'
 
