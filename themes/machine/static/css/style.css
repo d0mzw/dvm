@@ -691,14 +691,20 @@ main.container {
 .post-nav a {
   display: flex;
   flex-direction: column;
-  background: var(--fg);
-  color: var(--bg);
+  background: var(--entry);
+  border: 1px solid var(--border);
+  color: var(--fg);
   border-radius: 8px;
   padding: 14px 18px;
+  transition: border-color .15s;
 }
 
 .post-nav a:hover {
-  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.post-nav a:hover .title {
+  color: var(--accent);
 }
 
 .post-nav .next {
@@ -711,7 +717,7 @@ main.container {
 
 .post-nav .label {
   font-size: 12px;
-  opacity: .7;
+  color: var(--muted);
 }
 
 .post-nav .title {
