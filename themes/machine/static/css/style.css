@@ -286,7 +286,13 @@ main.container {
 }
 
 .social a {
+  display: inline-flex;
+  align-items: center;
   color: var(--muted);
+}
+
+.social svg {
+  display: block;
 }
 
 .social a:hover {

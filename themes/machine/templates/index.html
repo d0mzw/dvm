@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import social_icon, SOCIAL_LABELS with context %}
 {% set active_menu = "posts" %}
 
 {% block content %}
@@ -9,7 +10,9 @@
   {% if SOCIAL %}
   <div class="social">
     {% for name, link in SOCIAL %}
-    <a href="{{ link }}"{% if not link.startswith('mailto:') %} rel="me noopener" target="_blank"{% endif %}>{{ name }} &#8599;</a>
+    {% set icon = social_icon(name) %}
+    {% set label = SOCIAL_LABELS.get(name, name) %}
+    <a href="{{ link }}"{% if not link.startswith('mailto:') %} rel="me noopener" target="_blank"{% endif %}{% if icon %} aria-label="{{ label }}" title="{{ label }}"{% endif %}>{% if icon %}{{ icon }}{% else %}{{ name }} &#8599;{% endif %}</a>
     {% endfor %}
   </div>
   {% endif %}
