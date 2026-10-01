@@ -15,6 +15,26 @@
     });
   }
 
+  /* ---------- Mobile menu ---------- */
+
+  var header = document.querySelector(".site-header");
+  var menu = document.querySelector(".menu-toggle");
+  if (header && menu) {
+    var setMenu = function (open) {
+      header.classList.toggle("menu-open", open);
+      menu.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    menu.addEventListener("click", function () {
+      setMenu(!header.classList.contains("menu-open"));
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") setMenu(false);
+    });
+    document.addEventListener("click", function (e) {
+      if (!header.contains(e.target)) setMenu(false);
+    });
+  }
+
   /* ---------- Back to top ---------- */
 
   var toTop = document.querySelector(".to-top");

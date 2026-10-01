@@ -122,7 +122,8 @@ main.container {
   color: var(--fg);
 }
 
-.theme-toggle {
+.theme-toggle,
+.menu-toggle {
   width: 30px;
   height: 30px;
   padding: 0;
@@ -134,7 +135,8 @@ main.container {
   cursor: pointer;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.menu-toggle:hover {
   border-color: var(--muted);
 }
 
@@ -144,6 +146,51 @@ main.container {
   border-radius: 50%;
   border: 1.5px solid var(--fg);
   background: linear-gradient(90deg, var(--fg) 50%, transparent 50%);
+}
+
+.menu-toggle {
+  display: none;
+}
+
+.menu-toggle span,
+.menu-toggle span::before,
+.menu-toggle span::after {
+  display: block;
+  width: 14px;
+  height: 1.5px;
+  background: var(--fg);
+  transition: transform .15s, background .15s;
+}
+
+.menu-toggle span {
+  position: relative;
+}
+
+.menu-toggle span::before,
+.menu-toggle span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.menu-toggle span::before {
+  top: -5px;
+}
+
+.menu-toggle span::after {
+  top: 5px;
+}
+
+.menu-open .menu-toggle span {
+  background: transparent;
+}
+
+.menu-open .menu-toggle span::before {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.menu-open .menu-toggle span::after {
+  transform: translateY(-5px) rotate(-45deg);
 }
 
 .nav {
@@ -915,6 +962,48 @@ main.container {
   .nav {
     gap: 6px 16px;
     padding-top: 4px;
+  }
+
+  /* With JS, the nav becomes a drop-down behind the menu button. */
+  .js .site-header {
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 17px;
+    padding-bottom: 17px;
+  }
+
+  .js .menu-toggle {
+    display: grid;
+  }
+
+  .js .nav {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    padding-top: 0;
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 15px;
+  }
+
+  .js .menu-open .nav {
+    display: flex;
+  }
+
+  .js .nav a {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .js .nav a:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .js .nav a.active {
+    text-decoration: underline 2px var(--accent);
+    text-underline-offset: 6px;
   }
 
   .post-title {

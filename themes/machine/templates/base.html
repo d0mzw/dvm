@@ -12,6 +12,7 @@
       try { t = localStorage.getItem("theme"); } catch (e) {}
       if (t !== "light" && t !== "dark") t = "light";
       document.documentElement.setAttribute("data-theme", t);
+      document.documentElement.classList.add("js");
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +32,8 @@
       <a class="logo" href="{{ SITEURL }}/">{{ SITENAME }}</a>
       <button class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme"><span></span></button>
     </div>
-    <nav class="nav">
+    <button class="menu-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav"><span></span></button>
+    <nav class="nav" id="site-nav">
       {% for title, link in MENUITEMS %}
       <a href="{{ SITEURL }}{{ link }}"{% if title == active_menu|default('') %} class="active" aria-current="page"{% endif %}>{{ title }}</a>
       {% endfor %}
