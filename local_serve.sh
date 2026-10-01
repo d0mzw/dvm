@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Local preview at http://localhost:8000 (PORT=8001 ./serve.sh for another port).
+# Local preview at http://localhost:8000 (PORT=8001 ./local_serve.sh for another port).
 # Rebuilds on changes to content, theme and config; restart after editing the plugin.
 set -euo pipefail
 cd "$(dirname "$0")"
