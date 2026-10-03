@@ -1,4 +1,4 @@
 Title: About
 Slug: about
 
-LFG!
+LFG
