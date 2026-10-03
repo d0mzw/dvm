@@ -13,6 +13,7 @@ I've been self-studying ARENA, an AI-safety curriculum whose first chapter has y
 So I ported the whole chapter into my own modular implementation, loading GPT-2's weights into each module as I went and comparing the output against the reference, until every module matched. These are my notes from doing that, module by module, with the shapes and diagrams I needed to follow it.
 
 PvML: https://github.com/d0mzw/PvML
+Weights: https://huggingface.co/d0mzw/pvml-tinystories
 
 Disclaimer: these notes come from working through the ARENA 3.0 curriculum. I claim no credit for the original material, and this is not affiliated with or endorsed by ARENA.
 

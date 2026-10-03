@@ -16,6 +16,7 @@ But every weight in it was downloaded. Nothing had been learned.
 This post is the other half: a loss, a dataset, and a training loop, then a model of my own trained on TinyStories.
 
 PvML: https://github.com/d0mzw/PvML
+Weights: https://huggingface.co/d0mzw/pvml-tinystories
 
 Disclaimer: these notes come from working through the ARENA 3.0 curriculum. I claim no credit for the original material, and this is not affiliated with or endorsed by ARENA.
 
