@@ -477,7 +477,7 @@ It reached 1.732 and 0.573, against 2.080 and 0.517 for the same model at `n_ctx
 
 ### What changed
 
-Temperature 0.7, `top_p` 0.95, seed 0, and a 250 token cap it does not reach.
+Temperature 0.7, `top_p` 0.95, seed 0, and a 250 token cap neither of these two reaches.
 
 Prompt `Once upon a time`:
 
@@ -510,7 +510,7 @@ smiled and said thank you. Lily was glad she could go to the park and see more
 things. She felt very happy and proud.
 ```
 
-- It stops on its own after 150 tokens. Raising the cap from 250 to 400 changes nothing
+- Both stop on their own, the first after 150 tokens. Raising the cap from 250 to 400 changes neither. That is these two samples, not the general case: the five-seed count below is seven of ten
 - It has a shape: a setup, a next day, a close. At `n_ctx` 128 the model only ever saw slices of a story, never a whole one
 - Repetition got worse. `so excited` three times, `wait to play with them` twice
 - Reference drifts. The `modern building` becomes `the museum`, and Lily thanks a squirrel that was only an item in a list of things she saw
@@ -521,6 +521,6 @@ Across five seeds per prompt at the same settings, seven of the ten stories reac
 
 - 10.7 hours on the Z13, against 67 minutes for the ctx128 run of the same model
 - 0.962 sec/step against 0.202, both measured end to end on the real runs. That is 4.8x for 4x the tokens per step
-- Profiling the forward pass at batch 32 puts most of the time in the unembedding, not attention. At `n_ctx` 128 it is 28.0ms of 37.0ms, 75.7%. At 512 it is 108.8ms of 199.4ms, 54.6%. Projecting `d_model` 128 up to 50,257 logits at every position is a larger matmul than anything in the blocks
+- Profiling the forward pass alone at batch 32, so no backward and no optimiser, puts most of the time in the unembedding rather than attention. At `n_ctx` 128 it is 28.0ms of 37.0ms, 75.7%. At 512 it is 108.8ms of 199.4ms, 54.6%. Projecting `d_model` 128 up to 50,257 logits at every position is a larger matmul than anything in the blocks
 - The blocks are what make the cost superlinear. Going 128 to 512 is 4x the tokens, and they take 10.1x the time while the unembedding takes 3.9x. So attention's quadratic term explains the excess over 4x, while the unembedding explains the bulk of the absolute cost
 - The `n_ctx=512` chunking is not the same dataset as `n_ctx=128`, so the corpus is tokenized again. That is a one-time pass and 4GB of cache

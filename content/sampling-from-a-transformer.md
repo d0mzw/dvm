@@ -4,6 +4,7 @@ date: 2026-10-03
 tags:
   - transformers
   - arena
+  - samplers
 slug: sampling-from-a-transformer
 summary: Porting the generation loop into PvML, the strategies to turn logits into a token, and the one-token bug that made a trained model emit nothing but commas.
 ---
@@ -65,9 +66,25 @@ class SamplingArgs:
     top_p: float = 0.0  # 0 disables
     frequency_penalty: float = 0.0
     seed: int | None = None
+
+    def __post_init__(self) -> None:
+        if self.max_new_tokens <= 0:
+            raise ValueError(f"max_new_tokens must be positive, got {self.max_new_tokens}")
+        if self.temperature < 0:
+            raise ValueError(f"temperature must be non-negative, got {self.temperature}")
+        if self.top_k < 0:
+            raise ValueError(f"top_k must be non-negative, got {self.top_k}")
+        if not 0 <= self.top_p <= 1.0:
+            raise ValueError(f"top_p must be a probability in [0, 1], got {self.top_p}")
+        if self.top_k and self.top_p:
+            raise ValueError(
+                f"set at most one of top_k and top_p, got top_k={self.top_k} top_p={self.top_p}"
+            )
 ```
 
-- `top_k` and `top_p` are alternatives, not a pair. Allowing both would silently apply whichever the dispatcher checked first
+- `top_k` and `top_p` are alternatives, not a pair. Setting both raises, rather than silently applying whichever the dispatcher checks first
+- The checks run once at construction, not per token, so a bad combination fails before the first forward pass
+- `raise` rather than `assert`, because `python -O` strips asserts and the sampler treats these as a guarantee
 
 ### `next_token`
 
@@ -92,24 +109,28 @@ return sample_basic(logits)
 ### The loop
 
 ```python
-logits = self.model(input_ids[None, -self.cfg.n_ctx :])[0, -1]
+if self.prepend_bos:
+    window = t.cat([input_ids[:1], input_ids[1:][-(self.cfg.n_ctx - 1) :]])
+else:
+    window = input_ids[-self.cfg.n_ctx :]
+logits = self.model(window[None])[0, -1]
 next_id = self.next_token(input_ids, logits, args)
 input_ids = t.cat([input_ids, t.tensor([next_id], device=self.device)], dim=-1)
 if next_id == self.tokenizer.eos_token_id:
     break
 ```
 
-One line, three index operations:
-
 ```
-input_ids                 (seq_len,)
-input_ids[None, -n_ctx:]  (1, posn)             None adds the batch axis
-model(...)                (1, posn, d_vocab)
-[0, -1]                   (d_vocab,)            drop the batch, keep the last position
+input_ids        (seq_len,)
+window           (min(seq_len, n_ctx),)   BOS plus the last n_ctx - 1
+window[None]     (1, posn)                None adds the batch axis
+model(...)       (1, posn, d_vocab)
+[0, -1]          (d_vocab,)               drop the batch, keep the last position
 ```
 
 - `input_ids` is 1 dim, the model wants `(batch, posn)`
-- `-n_ctx:` is there in case the input tokens run past the context length. The sequence grows by one every step, so the slice keeps the last `n_ctx` and drops whatever came before
+- The window is built in two pieces so BOS stays at position 0. Slicing the whole sequence to the last `n_ctx` would drop it the moment generation outgrows the context length
+- `next_token` gets the full `input_ids`, not the window, so `apply_frequency_penalty` counts tokens the model can no longer see
 
 ### The missing BOS token
 
