@@ -165,7 +165,7 @@ out = residual * self.w + self.b
 - `w` and `b` are both `(d_model,)` = `(768,)`, and they start as all ones and all zeros, so before any training `out` is exactly the standardised residual and the layer does nothing of its own
 - One `w` and one `b` per LayerNorm, reused at all 7 positions, while the mean and std were worked out per position. The normalisation is local, the learned correction on top of it is not
 - Broadcasting pads the missing leading axes: in `(1, 7, 768) * (768,)` the `w` is read as `(1, 1, 768)` and stretched to `(1, 7, 768)`
-- Standardising throws the input's scale away, so `[1, 2, 3, 4]` and `[10, 20, 30, 40]` come out identical and only the direction survives. `w` and `b` put a scale back, one the model has learned rather than one the input happened to arrive with
+- Standardising throws the input's scale away, so `[1, 2, 3, 4]` and `[10, 20, 30, 40]` come out identical and after centering only the direction survives. `w` and `b` put a scale back, one the model has learned rather than one the input happened to arrive with
 
 ### Module output
 
@@ -248,7 +248,7 @@ attn_scores = einops.einsum(
 - `d_head` is contracted, so the 64 numbers of a query and a key collapse to one score
 - `batch` and `nheads` appear in both inputs *and* the output, so they are batched over rather than summed: an independent 7 x 7 grid per sequence per head
 - The two position axes get different names so they survive as separate dimensions. `posn_Q` is who is asking, `posn_K` is who is being read
-- These scores are raw, and dot products of 64-dimensional vectors grow with `d_head`. Dividing by `sqrt(64)` = 8 pulls them back to a range where softmax does not saturate into a near one-hot row and kill the gradients
+- These scores are raw. For entries of roughly unit variance the dot product of two 64-dimensional vectors has a standard deviation that grows like `sqrt(d_head)`, so dividing by `sqrt(64)` = 8 is exactly what cancels it. That pulls them back to a range where softmax does not saturate into a near one-hot row and kill the gradients
 
 ### `apply_causal_mask(attn_scores)`
 
@@ -634,7 +634,7 @@ logits = self.unembed(self.ln_final(residual))
 
 - `residual = block(residual)` only works because the shape never changes. That is why blocks stack
 - Nothing normalises the stream itself along the way, so `ln_final` is needed before the unembedding can read it
-- `nn.ModuleList` gives the children paths like `blocks.3.attn`, which is what `transformer_lens` calls its hooks. One vocabulary for the trace and the reference activations
+- `nn.ModuleList` gives the children paths like `blocks.3.attn`, which match `transformer_lens`'s module paths. Its hooks are points underneath those, such as `blocks.3.attn.hook_z`, so the two trees line up and one vocabulary covers the trace and the reference activations
 
 ### Module output
 
@@ -677,3 +677,4 @@ Where those parameters live:
 ```
 
 - 85M of it is the twelve blocks, and two thirds of each block is its MLP
+- GPT-2 small is usually quoted as 124M, which is this total minus `unembed`. The original ties the two vocabulary tables, `W_U = W_E` transposed, and counts those 38,597,376 parameters once. `transformer_lens` keeps them as separate tensors, so they are counted twice here

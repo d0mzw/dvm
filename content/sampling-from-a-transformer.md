@@ -42,7 +42,7 @@ src/pvml/sampling/
 
 ### `strategies`
 
-Six ways to sample the next token from a vector of logits, excluding `beam_search`.
+Six functions on a vector of logits, excluding `beam_search`. Four pick a token, two reshape the logits first.
 
 | Function | Code | What it does |
 | --- | --- | --- |
@@ -87,6 +87,7 @@ return sample_basic(logits)
 
 - The penalty is a correction to the raw scores so it goes first, and `top_k` and `top_p` read the distribution temperature produces so they come after it
 - `greedy_search` is checked before `apply_temperature` because temperature 0 would divide by zero. As temperature falls towards 0 the distribution concentrates on the argmax, so `greedy_search` is the limit it never reaches
+- Deliberately different from ARENA, which applies temperature first and returns greedy before the penalty. Here the penalty lands first, so it applies under greedy too, and dividing by temperature afterwards scales its strength by `1/temperature`
 
 ### The loop
 
@@ -132,6 +133,7 @@ with BOS     in  [          50256,   7454,    2402,  257,     640]
 ```
 
 - `tokenize_and_concatenate(..., add_bos_token=True)` puts `50256` at the start of every training row, so the model never saw anything else at position 0
+- Prepending it once is not enough. Slicing the whole sequence to the last `n_ctx` drops BOS again the moment generation outgrows the window, so the window is built as BOS plus the last `n_ctx - 1` tokens. That also matches training, where `seq_len = max_length - 1` leaves room for it
 
 ## Beam search
 
@@ -219,7 +221,7 @@ matches transformer_lens : True
 matches ARENA's expected : True
 ```
 
-- Greedy is the only sampling setting that can be checked exactly, because it is the only one with no draw in it
+- Greedy is the only setting of the stochastic strategies with no draw in it, so it is the only one checkable exactly
 
 ```bash
 (.venv) dom@dom-z13:~/Desktop/PvML$ python -m pvml.sampling.beams
@@ -260,6 +262,6 @@ return Sampler(model, tokenizer).sample(prompt, args)
 
 `src/pvml/reference/gpt2.py` is now the only file in the repo that imports `HookedTransformer`, and it only does so to load GPT-2 for the parity checks.
 
-### TODO
+### What's next
 
 - Skipping the KV cache section in the curriculum and moving on to mechanistic interpretability, which is what I came for

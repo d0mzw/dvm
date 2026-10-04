@@ -233,6 +233,9 @@ flowchart TB
     gen --> text["text"]
 ```
 
+> **Update, 3 October 2026**  
+> The generation loop has since been ported. See [Sampling from a Transformer]({filename}sampling-from-a-transformer.md). The rest of this section describes how it worked at the time of writing.
+
 I have not ported the generation loop. `experiments/sample.py` loads the trained weights into a TransformerLens `HookedTransformer` and calls its `generate`.
 
 - A run directory is self-contained: `config.json` rebuilds the architecture and `model.pt` fills it. Nothing else is needed to bring a finished run back
@@ -348,12 +351,14 @@ The first five ran 22:50 to 01:35, the sixth 02:59 to 13:40 the next day.
 | `d32-l4-h16-ctx128-20k` | 128 | 20,000 | 2.782 | 0.421 | 34.6 | +0.006 |
 | `d32-l4-h16-ctx128-5k` | 128 | 5,000 | 2.996 | 0.395 | 8.4 | -0.024 |
 
-Only the five at `n_ctx` 128 are comparable with each other. Predicting a token from 511 tokens of context is an easier problem than from 127, so part of the top row's lead is the task, not the model.
+Only the five at `n_ctx` 128 are comparable with each other. Predicting a token from 511 tokens of context is an easier problem than from 127, so part of the top row's lead is the task, not the model. Re-chunking also changes the split, so the two windows were not evaluated on the same held-out text.
 
 - Capacity beats steps. `d128` reaches 2.369 in 5,000 steps and 17 minutes. `d32` needs 20,000 steps and 35 minutes to reach only 2.782, so four times the steps and twice the clock still lands short
+- `d32` uses 16 heads against `d128`'s 4, so its `d_head` is 2 where theirs is 32. The capacity comparison therefore mixes width with unusually narrow heads, and a rerun at `d32` with 4 heads would separate them
 - Of the five, only `d32` at 20,000 steps has converged. Its last 500 steps went up 0.006, noise around a floor near 2.78. `d128` at 20,000 is still moving and `d256` was descending fastest of anything when it stopped
-- `d256` losing to `d128` at 5,000 steps is undertraining, not a ceiling. First epoch 5.404 against `d128`'s 4.343, then the steepest end slope of the five. `lr=1e-3` was inherited from the tiny model and is probably too high for it
-- `d256` at 20,000 steps is still unrun. The slopes say it should overtake
+- `d256` losing to `d128` at 5,000 steps looks like undertraining rather than a ceiling, though nothing here rules the ceiling out. First epoch 5.404 against `d128`'s 4.343, then the steepest end slope of the five
+- Every run uses a constant `lr=1e-3` with no warmup and no decay, inherited from the tiny model. Warmup plus cosine decay is the first thing to try on `d256` before concluding anything about its capacity
+- `d256` at 20,000 steps is still unrun. The end slopes suggest it would overtake, which is a hypothesis and not a result
 
 ### What the best of these writes
 
@@ -510,10 +515,12 @@ things. She felt very happy and proud.
 - Repetition got worse. `so excited` three times, `wait to play with them` twice
 - Reference drifts. The `modern building` becomes `the museum`, and Lily thanks a squirrel that was only an item in a list of things she saw
 
-So the window bought story structure and did not buy coherence within it. Those are separate problems, and only the first one was a context limit.
+Across five seeds per prompt at the same settings, seven of the ten stories reached end-of-text on their own and three ran to the 250 token cap. The three that hit the cap are the three that fell into a repetition loop, `I love you` and `She wished she had` repeating until the cap stopped them. So the window bought story structure, and repetition is what still breaks it. Coherence within a story is uneven rather than absent: `Timmy` fixing a picture with glue holds together, while a bear carries candy out of a tree that was never mentioned.
 
 ### Cost
 
 - 10.7 hours on the Z13, against 67 minutes for the ctx128 run of the same model
-- 0.962 sec/step against 0.202, both measured end to end on the real runs. That is 4.8x for 4x the tokens per step, and the extra is attention, whose cost grows with the square of the window
+- 0.962 sec/step against 0.202, both measured end to end on the real runs. That is 4.8x for 4x the tokens per step
+- Profiling the forward pass at batch 32 puts most of the time in the unembedding, not attention. At `n_ctx` 128 it is 28.0ms of 37.0ms, 75.7%. At 512 it is 108.8ms of 199.4ms, 54.6%. Projecting `d_model` 128 up to 50,257 logits at every position is a larger matmul than anything in the blocks
+- The blocks are what make the cost superlinear. Going 128 to 512 is 4x the tokens, and they take 10.1x the time while the unembedding takes 3.9x. So attention's quadratic term explains the excess over 4x, while the unembedding explains the bulk of the absolute cost
 - The `n_ctx=512` chunking is not the same dataset as `n_ctx=128`, so the corpus is tokenized again. That is a one-time pass and 4GB of cache
