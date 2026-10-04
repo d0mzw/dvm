@@ -281,13 +281,17 @@ main.container {
 .social {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  gap: 26px;
   font-size: 13px;
 }
 
+/* 18px icons with a 44px tap area: the padding is the target, the negative
+   margin keeps it out of the layout, and the 26px gap tiles the targets. */
 .social a {
   display: inline-flex;
   align-items: center;
+  padding: 13px;
+  margin: -13px;
   color: var(--muted);
 }
 
