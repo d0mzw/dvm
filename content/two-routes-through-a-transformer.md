@@ -1,12 +1,12 @@
 ---
-title: Transformer Circuits
+title: Two Routes Through a Transformer
 date: 2026-10-04
 tags:
   - transformers
   - interpretability
   - transformer-circuits
-slug: transformer-circuits
-summary: Working through the path decomposition at the heart of A Mathematical Framework for Transformer Circuits, with every number in the example derived rather than asserted.
+slug: two-routes-through-a-transformer
+summary: There are only two routes from a token to a logit in a one-layer transformer. Working both of them end to end, with every number in the example derived rather than asserted.
 ---
 [A Mathematical Framework for Transformer Circuits](https://transformer-circuits.pub/2021/framework/index.html) has a [walkthrough video](https://www.youtube.com/watch?v=KV5gbOmHbjU) to go with it. I could not follow either until I had worked out what a one-layer attention-only model actually computes, so this post is that groundwork: the path decomposition end to end, with every number in the example derived rather than asserted. Architecture background is in [Understanding Transformers]({filename}understanding-transformers.md).
 
