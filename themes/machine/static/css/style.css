@@ -650,6 +650,17 @@ main.container {
   height: auto;
 }
 
+/* Math (KaTeX) */
+.post-content div.arithmatex {
+  margin: 0 0 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.post-content .katex {
+  font-size: 1.05em;
+}
+
 /* Figures */
 .post-content figure {
   margin: 0 0 24px;

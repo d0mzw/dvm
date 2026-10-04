@@ -76,6 +76,7 @@ MARKDOWN = {
         "pymdownx.tilde": {},
         "pymdownx.keys": {},
         "pymdownx.magiclink": {},  # link bare URLs, as Obsidian does
+        "pymdownx.arithmatex": {"generic": True},  # $...$ and $$...$$ math, drawn by KaTeX
     },
     "output_format": "html5",
 }

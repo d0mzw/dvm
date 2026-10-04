@@ -96,6 +96,41 @@
       .catch(function () { empty.hidden = false; });
   }
 
+  /* ---------- Math ---------- */
+
+  // pymdownx.arithmatex marks math as <span class="arithmatex">\(...\)</span> and
+  // <div class="arithmatex">\[...\]</div>; KaTeX is loaded only on pages that have some.
+  var maths = document.querySelectorAll(".arithmatex");
+  if (maths.length) {
+    var KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16/dist/";
+    var css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = KATEX + "katex.min.css";
+    document.head.appendChild(css);
+    var js = document.createElement("script");
+    js.src = KATEX + "katex.min.js";
+    js.onload = function () {
+      maths.forEach(function (el) {
+        var tex = el.textContent.trim();
+        var display = el.tagName === "DIV";
+        window.katex.render(tex.slice(2, -2), el, { displayMode: display, throwOnError: false });
+      });
+      // The TOC holds headings as plain text, so math in a heading arrives as \(...\)
+      document.querySelectorAll(".post-toc a").forEach(function (a) {
+        if (a.textContent.indexOf("\\(") === -1) return;
+        var parts = a.textContent.split(/\\\((.*?)\\\)/);
+        a.textContent = "";
+        parts.forEach(function (part, i) {
+          if (i % 2 === 0) { a.appendChild(document.createTextNode(part)); return; }
+          var span = document.createElement("span");
+          window.katex.render(part, span, { throwOnError: false });
+          a.appendChild(span);
+        });
+      });
+    };
+    document.head.appendChild(js);
+  }
+
   /* ---------- Mermaid ---------- */
 
   var blocks = document.querySelectorAll(".mermaid");
