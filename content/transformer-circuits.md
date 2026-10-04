@@ -8,7 +8,7 @@ tags:
 slug: transformer-circuits
 summary: Working through the path decomposition at the heart of A Mathematical Framework for Transformer Circuits, with every number in the example derived rather than asserted.
 ---
-The groundwork for [A Mathematical Framework for Transformer Circuits](https://transformer-circuits.pub/2021/framework/index.html): what a one-layer attention-only model actually computes, worked through end to end. Architecture background in [Understanding Transformers]({filename}understanding-transformers.md).
+[A Mathematical Framework for Transformer Circuits](https://transformer-circuits.pub/2021/framework/index.html) has a [walkthrough video](https://www.youtube.com/watch?v=KV5gbOmHbjU) to go with it. I could not follow either until I had worked out what a one-layer attention-only model actually computes, so this post is that groundwork: the path decomposition end to end, with every number in the example derived rather than asserted. Architecture background is in [Understanding Transformers]({filename}understanding-transformers.md).
 
 ## Path decomposition of transformer output
 
@@ -79,7 +79,9 @@ flowchart TB
 | **`mat`** | 0.5   | 0.1   | 0.1   | 0.2  | 0.0   | 3.8 |
 | **`.`**   | 3.5   | 0.2   | 0.0   | 0.1  | 0.1   | 0.0 |
 
-*Row = the token you just saw, column = a candidate next token, cell = score. Six tokens here; the real table is `n_vocab x n_vocab`.*
+**Route 1: the bigram table.** *Row = the token you just saw, column = a candidate next token, cell = score. Six tokens here; the real table is `n_vocab x n_vocab`.*
+
+Every table in this post is hand-built to make the mechanism visible. None of these numbers come off a trained model. What is derived is everything downstream of them: the attention percentages, the logit shifts and the totals all follow from these tables by arithmetic you can check.
 
 Walk the first three positions through it:
 
@@ -127,7 +129,7 @@ Route 2 takes two steps: **pick where to look**, then **use what is there**.
 | **8 `the`** | **0.4** | **3.4** | **0.7** | **0.6** | **0.4** | **2.3** | **0.5** | **0.4** | **x**   |
 | 9 `cat`     | 0.5     | 0.3     | 0.6     | 0.4     | 0.5     | 0.8     | 0.3     | 0.5     | 0.3     |
 
-*Row = where you are standing, column = where you are looking, cell = the score.*
+**Route 2, step 1: the score matrix.** *Row = where you are standing, column = where you are looking, cell = the score.*
 
 Lower triangular: the causal mask drawn out. Rows 5 and 8 are both `the` and both score `cat` highest, because a `the` wants a noun. Row 1 is a `the` with nothing behind it.
 
@@ -154,6 +156,8 @@ These go into softmax. Real attention divides by $\sqrt{d_\text{head}}$ first, w
 | 9   | `cat` | x       | **0.0**  | 0 / 50 = **0%**   |
 |     |       |         | **50.0** | **100%**          |
 
+**Route 2, step 1: row 8 softmaxed.** *Score to `exp` to share of the total.*
+
 Exponentiating decides it:
 
 - **`cat` at position 2** -> scores 3.4 -> `exp` 30.0 -> 30.0 / 50.0 = **60%**
@@ -178,7 +182,7 @@ This row is row 8 of the head's attention pattern, written $A$ here and $A^h$ on
 | 8 `the` | **0.9** | 0.1     | 0.0     | 0.1     | 0.1     | 0.0     |
 | 9 `cat` | 0.1     | **5.0** | 0.2     | 0.0     | 0.0     | 0.0     |
 
-*Row = a position, column = a candidate next token, cell = how much attending there shifts the logit.*
+**Route 2, step 2: the OV table.** *Row = a position, column = a candidate next token, cell = how much attending there shifts the logit.*
 
 A row depends only on the token at that position, so 1, 5 and 8 are identical, as are 2 and 9. Position 9 has a row like any other; step 1 gave it 0%. The big diagonal is the tell: attend to `cat`, boost `cat`. A **copying head**.
 
