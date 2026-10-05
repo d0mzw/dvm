@@ -48,9 +48,10 @@ SOCIAL = (
 
 INTRO = (
     "I'm a security researcher/engineer. This is where I post notes on vulnerability research, "
-    "exploit development, offensive security, and what I'm learning about AI/ML safety & internals. "
-    "Some posts are written from my Obsidian notes with AI assistance, "
-    "and I try my best to verify their accuracy."
+    "exploit development, offensive security, and what I'm learning about AI/ML safety & internals."
+    " <br><br>"  # the space keeps the page description from reading "internals.Some"
+    "<em>Some posts are drafted from my Obsidian notes with AI help. "
+    "I verify what I can and correct mistakes as I find them.</em>"
 )
 
 MARKDOWN = {
