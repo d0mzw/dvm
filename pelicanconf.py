@@ -50,8 +50,7 @@ INTRO = (
     "I'm a security researcher/engineer. This is where I post notes on vulnerability research, "
     "exploit development, offensive security, and what I'm learning about AI/ML safety & internals."
     " <br><br>"  # the space keeps the page description from reading "internals.Posts"
-    "<em>Posts are drafted from notes in my Obsidian vault with AI assistance. "
-    "I verify what I can and correct mistakes as I find them.</em>"
+    "<em>Posts are drafted from my Obsidian notes with AI assistance.</em>"
 )
 
 MARKDOWN = {
