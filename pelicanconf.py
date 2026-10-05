@@ -49,7 +49,8 @@ SOCIAL = (
 INTRO = (
     "I'm a security researcher/engineer. This is where I post notes on vulnerability research, "
     "exploit development, offensive security, and what I'm learning about AI/ML safety & internals. "
-    "Some posts are written from my Obsidian notes with AI assistance."
+    "Some posts are written from my Obsidian notes with AI assistance, "
+    "and I try my best to verify their accuracy."
 )
 
 MARKDOWN = {
