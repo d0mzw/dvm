@@ -170,6 +170,9 @@
             secondaryColor: v("--entry"),
             tertiaryColor: v("--entry"),
             edgeLabelBackground: v("--entry"),
+            noteBkgColor: v("--code"),
+            noteBorderColor: v("--muted"),
+            noteTextColor: v("--fg"),
           },
         });
         blocks.forEach(function (block) {

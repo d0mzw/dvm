@@ -405,7 +405,7 @@ main.container {
   font-weight: 700;
   line-height: 1.18;
   margin: 0 0 14px;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 .post-meta {
@@ -648,6 +648,13 @@ main.container {
   flex: none;
   max-width: none; /* natural size; scrolls on narrow screens */
   height: auto;
+}
+
+/* With the full column available, shrink wide diagrams to fit instead of scrolling */
+@media (min-width: 900px) {
+  .post-content .mermaid svg {
+    max-width: 100%;
+  }
 }
 
 /* Math (KaTeX) */
